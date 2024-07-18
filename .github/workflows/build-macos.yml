@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
     - name: Checkout code
@@ -27,8 +27,11 @@ jobs:
     - name: Restore dependencies and workloads
       run: dotnet workload restore
 
-    - name: Install Xcode 17.2
-      run: sudo xcode-select --switch /Applications/Xcode_17.2.app/Contents/Developer
+    - name: List Xcode installations
+      run: sudo ls -1 /Applications | grep "Xcode"
+
+    - name: Select Xcode 15.1
+      run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
 
     - name: Build project
       run: dotnet build --configuration Release
