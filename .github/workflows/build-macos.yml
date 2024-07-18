@@ -30,6 +30,9 @@ jobs:
     - name: Publish project
       run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
 
+    - name: Install MAUI workloads
+      run: dotnet workload install maui
+
     - name: Create DMG package
       run: |
         mkdir -p output
