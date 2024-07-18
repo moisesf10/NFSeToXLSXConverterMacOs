@@ -1,0 +1,42 @@
+name: Build macOS Installer
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x' # Use a versão correta do .NET que você está utilizando
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release
+
+    - name: Publish project
+      run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
+
+    - name: Create DMG package
+      run: |
+        mkdir -p output
+        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-installer
+        path: ./output/NFSe_To_XLSX_Converter.dmg
