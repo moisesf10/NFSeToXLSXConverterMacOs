@@ -1,0 +1,205 @@
+﻿@page "/"
+
+@inject MainApp mainApp
+
+<h1>NFS-e To XLSX Converter</h1>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 bg-warning p-2">
+            Utilize o formulário abaixo para importar um arquivo XML de uma nota fiscal, ou um arquivo zip contendo o XML de várias notas fiscais
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <label for="file" class="form-label">Carregar arquivo</label>
+            @* <input class="form-control" type="file" id="file" @onchange="HandleFileSelected"> *@
+            <InputFile OnChange="HandleFileSelected" class="form-control" />
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <label for="emitida-em" class="form-label">Emissão em</label>
+            <input type="text" id="emitida-em" class="form-control" @bind="emitidaEm" placeholder="dd/mm/aaaa"
+                   onkeyup="
+                        var v = this.value;
+                        if (v.match(/^\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        } else if (v.match(/^\d{2}\/\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        }"
+                   maxlength="10">
+        </div>
+        <div class="col-md-4">
+            <label for="emitida-ate" class="form-label">Até</label>
+            <input type="text" id="emitida-ate" class="form-control" @bind-value="emitidaAte" placeholder="dd/mm/aaaa"
+                   onkeyup="
+                        var v = this.value;
+                        if (v.match(/^\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        } else if (v.match(/^\d{2}\/\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        }"
+                   maxlength="10">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <label for="competencia-em" class="form-label">Competência em</label>
+            <input type="text" id="competencia-em" class="form-control" @bind-value="competenciaEm" placeholder="mm/aaaa"
+                   onkeyup="
+                        var v = this.value;
+                        if (v.match(/^\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        } "
+                   maxlength="7">
+        </div>
+        <div class="col-md-4">
+            <label for="competencia-ate" class="form-label">Até</label>
+            <input type="text" id="competencia-ate" class="form-control" @bind-value="competenciaAte">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <button type="button" class="btn btn-secondary" @onclick="processInputs">Converter</button>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            @feedbackMessage
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? emitidaEm = null;
+    private string? emitidaAte;
+    private string? competenciaEm;
+    private string? competenciaAte;
+    private string? feedbackMessage;
+
+    private DateTime? inicioEmissao = null;
+    private DateTime? fimEmissao = null;
+    private DateTime? inicioCompetencia = null;
+    private DateTime? fimCompetencia = null;
+
+    private IBrowserFile? selectedFile;
+
+    private async Task processInputs()
+    {
+
+        if (selectedFile == null)
+        {
+            feedbackMessage = "Nenhum arquivo selecionado.";
+            Console.WriteLine("Nenhum arquivo selecionado.");
+            return;
+        }
+
+
+        List<string> errorMessages = new List<string>();
+
+        var validateInicioEmissao = Validate.validateDate(emitidaEm);
+        var validateFimEmissao = Validate.validateDate(emitidaAte);
+        var validateInicioCompetencia = Validate.validateCompetencia(competenciaEm);
+        var validateFimCompetencia = Validate.validateCompetencia(competenciaAte);
+
+
+        if (!validateInicioEmissao.Item1)
+        {
+            errorMessages.Add("O valor informado para a data inicial de emissão é inválida");
+        }
+        else
+        {
+            inicioEmissao = validateInicioEmissao.Item2 ?? null;
+        }
+
+        if (!validateFimEmissao.Item1)
+        {
+            errorMessages.Add("O valor informado para a data final de emissão é inválida");
+        }
+        else
+        {
+            fimEmissao = validateFimEmissao.Item2 ?? null;
+        }
+
+
+        if (!validateInicioCompetencia.Item1)
+        {
+            errorMessages.Add("O valor informado para o início da competência é inválido");
+        }
+        else
+        {
+            inicioCompetencia = validateInicioCompetencia.Item2 ?? null;
+        }
+
+        if (!validateFimCompetencia.Item1)
+        {
+            errorMessages.Add("O valor informado para o fim da competência é inválido");
+        }
+        else
+        {
+            fimCompetencia = validateFimCompetencia.Item2 ?? null;
+        }
+
+
+
+        if (errorMessages.Count > 0)
+        {
+            string messages = string.Join("\r\n", errorMessages);
+            //DisplayAlert("Erro", messages, "OK");
+            App.Current.MainPage.DisplayAlert("Erro", messages, "OK");
+            return;
+        }
+
+
+
+        //MainApp mainApp = new MainApp();
+        // Determinar a extensão do arquivo
+        var fileName = selectedFile.Name;
+        var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
+
+        switch (fileExtension)
+        {
+            case ".xml":
+                feedbackMessage = await  mainApp.ProcessXmlFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
+                break;
+            case ".zip":
+                var success = await mainApp.ProcessZipFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
+                if (success)
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Arquivo convertido com sucesso", "OK");
+                    feedbackMessage = "Arquivo convertido com sucesso.";
+                }
+                else
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Falha na conversão. O arquivo não pode ser processado", "OK");
+                    feedbackMessage = "Arquivo convertido com sucesso.";
+                }
+                break;
+            default:
+                feedbackMessage = "Formato de arquivo não suportado.";
+                Console.WriteLine("Formato de arquivo não suportado.");
+                break;
+        }
+
+        // feedbackMessage = Main.Processar(emitidaEm, emitidaAte, competenciaEm, competenciaAte, selectedFile);
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+}
+
+<script>
+    $(function(){
+        $('#emitida-e, #emitida-ate').mask('99/99/9999');
+        $('#competencia-em, #competencia-ate').mask('99/9999');
+
+        maskInput('emitida-em', 'dd/mm/yyyy');
+         
+    });
+
+    
+
+</script>
