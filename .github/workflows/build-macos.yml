@@ -1,4 +1,4 @@
-name: Build macOS Installer
+name: Build macOS and Windows Installer
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-macos:
     runs-on: macos-latest
 
     steps:
@@ -22,16 +22,16 @@ jobs:
         dotnet-version: '8.0.x' # Use a versão correta do .NET
 
     - name: Install MAUI workloads
-      run: dotnet workload install maui-android maui-ios maui-maccatalyst
+      run: dotnet workload install maui-maccatalyst
 
     - name: Restore dependencies and workloads
       run: dotnet workload restore
 
     - name: Build project
-      run: dotnet build --configuration Release -p:PublishTrimmed=false
+      run: dotnet build --configuration Release
 
     - name: Publish project
-      run: dotnet publish -c Release -f net8.0-maccatalyst -p:PublishTrimmed=false -o ./publish
+      run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
 
     - name: Create DMG package
       run: |
@@ -43,3 +43,36 @@ jobs:
       with:
         name: macos-installer
         path: ./output/NFSe_To_XLSX_Converter.dmg
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x' # Use a versão correta do .NET
+
+    - name: Install MAUI workloads
+      run: dotnet workload install maui-windows
+
+    - name: Restore dependencies and workloads
+      run: dotnet workload restore
+
+    - name: Build project
+      run: dotnet build --configuration Release
+
+    - name: Publish project
+      run: dotnet publish -c Release -f net8.0-windows10.0.19041.0 -o ./publish
+
+    - name: Create ZIP package
+      run: Compress-Archive -Path ./publish/* -DestinationPath ./output/NFSe_To_XLSX_Converter.zip
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-installer
+        path: ./output/NFSe_To_XLSX_Converter.zip
