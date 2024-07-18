@@ -1,4 +1,4 @@
-name: Build macOS and Windows Installer
+name: Build macOS Installer
 
 on:
   push:
@@ -26,6 +26,9 @@ jobs:
 
     - name: Restore dependencies and workloads
       run: dotnet workload restore
+
+    - name: Install Xcode 17.2
+      run: sudo xcode-select --switch /Applications/Xcode_17.2.app/Contents/Developer
 
     - name: Build project
       run: dotnet build --configuration Release
