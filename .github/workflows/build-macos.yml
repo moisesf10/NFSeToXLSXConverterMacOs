@@ -39,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: macos-installer
-        path: ./output/NFSe_To_XLSX_Converter.dmg
+        path: ./output/NFSe_To_XLSX_Converter.dmg 
