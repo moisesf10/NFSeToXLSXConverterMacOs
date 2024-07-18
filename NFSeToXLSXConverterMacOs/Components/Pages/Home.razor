@@ -56,7 +56,12 @@
         </div>
         <div class="col-md-4">
             <label for="competencia-ate" class="form-label">Até</label>
-            <input type="text" id="competencia-ate" class="form-control" @bind-value="competenciaAte">
+            <input type="text" id="competencia-ate" class="form-control" @bind-value="competenciaAte" placeholder="mm/aaaa" onkeyup="
+                        var v = this.value;
+                        if (v.match(/^\d{2}$/) !== null) {
+                            this.value = v + '/';
+                        } "
+                   maxlength="7">
         </div>
     </div>
     <div class="row mt-4">
@@ -161,10 +166,18 @@
         switch (fileExtension)
         {
             case ".xml":
-                feedbackMessage = await  mainApp.ProcessXmlFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
-                break;
-            case ".zip":
-                var success = await mainApp.ProcessZipFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
+                bool success;
+                try
+                {
+                    success = await mainApp.ProcessXmlFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
+                }
+                catch (Exception e)
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Falha na conversão. " + e.Message, "OK");
+                    feedbackMessage = "Falha na conversão.";
+                    return;
+                }
+
                 if (success)
                 {
                     App.Current.MainPage.DisplayAlert("Processamento finalizado", "Arquivo convertido com sucesso", "OK");
@@ -173,7 +186,30 @@
                 else
                 {
                     App.Current.MainPage.DisplayAlert("Processamento finalizado", "Falha na conversão. O arquivo não pode ser processado", "OK");
+                    feedbackMessage = "Falha na conversão.";
+                }
+                break;
+            case ".zip":
+                success  = false;
+                try
+                {
+                    success = await mainApp.ProcessZipFile(inicioEmissao, fimEmissao, inicioCompetencia, fimCompetencia, selectedFile);
+                }catch(Exception e)
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Falha na conversão. "+ e.Message, "OK");
+                    feedbackMessage = "Falha na conversão.";
+                    return;
+                }
+                
+                if (success)
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Arquivo convertido com sucesso", "OK");
                     feedbackMessage = "Arquivo convertido com sucesso.";
+                }
+                else
+                {
+                    App.Current.MainPage.DisplayAlert("Processamento finalizado", "Falha na conversão. O arquivo não pode ser processado", "OK");
+                    feedbackMessage = "Falha na conversão.";
                 }
                 break;
             default:

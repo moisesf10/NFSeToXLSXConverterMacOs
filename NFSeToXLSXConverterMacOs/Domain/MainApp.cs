@@ -24,13 +24,23 @@ namespace NFSeToXLSXConverterMacOs.Domain
             this.excel = excel;
         }
 
-        public async Task<string> ProcessXmlFile(DateTime? emitidaEm, DateTime? emitidaAte, 
-			DateTime? competenciaEm, DateTime? competenciaAte, IBrowserFile? file)
+        public async Task<bool> ProcessXmlFile(DateTime? inicioEmissao, DateTime? fimEmissao, 
+			DateTime? inicioCompetencia, DateTime? fimCompetencia, IBrowserFile? file)
 		{
+            var stream = file?.OpenReadStream();
 
+            ImportXml importXml = new ImportXml();
 
-			return "Processado";
-		}
+            ImportXml importerXml = new ImportXml();
+            var row = importerXml.readFile(stream);
+            excel.genereteHeader(row);
+            excel.addRow(row);
+
+            var fileSaverResult = await SaveFile(excel);
+            fileSaverResult.EnsureSuccess();
+            excel.dispose();
+            return fileSaverResult.IsSuccessful;
+        }
 
         public async Task<bool> ProcessZipFile(DateTime? inicioEmissao, DateTime? fimEmissao,
             DateTime? inicioCompetencia, DateTime? fimCompetencia, IBrowserFile? file)

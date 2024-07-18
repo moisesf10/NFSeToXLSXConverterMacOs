@@ -12,10 +12,14 @@ namespace NFSeToXLSXConverterMacOs.Domain
         public async Task<(bool, string)> loadFile(Stream? stream)
         {
             
-
             try
             {
-                content = stream?.ToString();
+                if (stream != null) {
+                    using (StreamReader streamReader = new StreamReader(stream))
+                    {
+                        content = streamReader.ReadToEnd();
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -30,11 +34,14 @@ namespace NFSeToXLSXConverterMacOs.Domain
             throw new NotImplementedException();
         }
 
-        public IDictionary<string, string?> readFile(string? filePath = null)
+        public IDictionary<string, string?> readFile(Stream? stream = null)
         {
-            if (filePath != null)
+            if (stream != null)
             {
-                content = System.IO.File.ReadAllText(filePath);
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    content = streamReader.ReadToEnd();
+                };
             }
 
             if (content == null)
