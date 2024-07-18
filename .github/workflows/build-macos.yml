@@ -14,24 +14,24 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '8.x' # Use a versão correta do .NET que você está utilizando
+        dotnet-version: '8.0.x' # Use a versão correta do .NET
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Install MAUI workloads
+      run: dotnet workload install maui-android maui-ios maui-maccatalyst
+
+    - name: Restore dependencies and workloads
+      run: dotnet workload restore
 
     - name: Build project
       run: dotnet build --configuration Release
 
     - name: Publish project
       run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
-
-    - name: Install MAUI workloads
-      run: dotnet workload install maui
 
     - name: Create DMG package
       run: |
@@ -42,4 +42,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: macos-installer
-        path: ./output/NFSe_To_XLSX_Converter.dmg 
+        path: ./output/NFSe_To_XLSX_Converter.dmg
