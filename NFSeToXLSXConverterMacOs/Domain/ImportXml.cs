@@ -34,13 +34,13 @@ namespace NFSeToXLSXConverterMacOs.Domain
             throw new NotImplementedException();
         }
 
-        public IDictionary<string, string?> readFile(Stream? stream = null)
+        public async Task<IDictionary<string, string?>> readFile(Stream? stream = null)
         {
             if (stream != null)
             {
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    content = streamReader.ReadToEnd();
+                    content = await streamReader.ReadToEndAsync();
                 };
             }
 

@@ -32,7 +32,7 @@ namespace NFSeToXLSXConverterMacOs.Domain
             ImportXml importXml = new ImportXml();
 
             ImportXml importerXml = new ImportXml();
-            var row = importerXml.readFile(stream);
+            var row = await importerXml.readFile(stream);
             excel.genereteHeader(row);
             excel.addRow(row);
 
