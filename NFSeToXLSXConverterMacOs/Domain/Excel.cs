@@ -22,7 +22,7 @@ namespace NFSeToXLSXConverterMacOs.Domain
 
         }
 
-        public void genereteHeader(IDictionary<string, string> header)
+        public async Task genereteHeader(IDictionary<string, string> header)
         {
             int col = 1;
             foreach (var item in header)
@@ -33,12 +33,12 @@ namespace NFSeToXLSXConverterMacOs.Domain
             index = 2;
         }
 
-        public void addRow(IDictionary<string, string?> row)
+        public async Task addRow(IDictionary<string, string?> row)
         {
             var col = 1;
             foreach (var item in row)
             {
-                worksheet.Cell(index, col).Value = item.Value;
+                 worksheet.Cell(index, col).Value = item.Value;
                 col++;
             }
             index++;

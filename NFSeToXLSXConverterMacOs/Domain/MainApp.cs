@@ -29,12 +29,10 @@ namespace NFSeToXLSXConverterMacOs.Domain
 		{
             var stream = file?.OpenReadStream();
 
-            ImportXml importXml = new ImportXml();
-
             ImportXml importerXml = new ImportXml();
             var row = await importerXml.readFile(stream);
-            excel.genereteHeader(row);
-            excel.addRow(row);
+            await excel.genereteHeader(row);
+            await excel.addRow(row);
 
             var fileSaverResult = await SaveFile(excel);
             fileSaverResult.EnsureSuccess();
@@ -57,7 +55,7 @@ namespace NFSeToXLSXConverterMacOs.Domain
 
                 if (i == 0)
                 {
-                    excel.genereteHeader(dictionary);
+                    await excel.genereteHeader(dictionary);
                 }
                 if (inicioEmissao != null && fimEmissao != null)
                 {
@@ -82,7 +80,7 @@ namespace NFSeToXLSXConverterMacOs.Domain
                     }
                 }
 
-                excel.addRow(dictionary);
+                await excel.addRow(dictionary);
                 i++;
             }
             importerZip.dispose();

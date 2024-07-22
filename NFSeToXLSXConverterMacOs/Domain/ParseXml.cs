@@ -19,18 +19,48 @@ namespace NFSeToXLSXConverterMacOs.Domain
             XmlDocument dom = new XmlDocument();
             dom.LoadXml(content);
 
-            XmlElement? infNfse = dom.GetElementsByTagName("InfNfse").Count > 0 ? (XmlElement?)dom.GetElementsByTagName("InfNfse").Item(0) : null;
+            XmlElement nfse = dom?.GetElementsByTagName("Nfse")?.Count > 0 ? (XmlElement?)dom.GetElementsByTagName("Nfse").Item(0) : null;
+            string versaoNota = "2.02";
+
+            if (nfse != null && nfse.HasAttribute("versao") )
+            {
+                versaoNota =  nfse.GetAttribute("versao");
+            }
+
+            switch (versaoNota)
+            {
+                case "1.00":
+                    XmlElement? infNfse = nfse?.GetElementsByTagName("InfNfse")?.Count > 0 ? (XmlElement?)nfse.GetElementsByTagName("InfNfse").Item(0) : null;
+                    parseV100(dict, infNfse);
+                    break;
+                case "2.02":
+                    infNfse = nfse?.GetElementsByTagName("InfNfse")?.Count > 0 ? (XmlElement?)nfse.GetElementsByTagName("InfNfse").Item(0) : null;
+                    parseV202(dict, infNfse);
+                    break;
+
+            }
+            
+            
+            
+
+            return dict;
+        }
+
+
+
+        private static Dictionary<string, string?> parseV202(Dictionary<string, string?> dict, XmlElement? infNfse)
+        {
             if (infNfse != null && infNfse.ChildNodes.Count > 0)
             {
-                var numeroNfse = infNfse.GetElementsByTagName("Numero").Count > 0
+                var numeroNfse = infNfse?.GetElementsByTagName("Numero")?.Count > 0
                         ? infNfse.GetElementsByTagName("Numero").Item(0).InnerText : null;
                 dict.Add("NumeroNfse", numeroNfse);
 
-                var codigoVerificacao = infNfse.GetElementsByTagName("CodigoVerificacao").Count > 0
+                var codigoVerificacao = infNfse?.GetElementsByTagName("CodigoVerificacao")?.Count > 0
                     ? infNfse.GetElementsByTagName("CodigoVerificacao").Item(0).InnerText : null;
                 dict.Add("CodigoVerificacao", codigoVerificacao);
 
-                var dtEmissao = infNfse.GetElementsByTagName("DataEmissao").Count > 0
+                var dtEmissao = infNfse?.GetElementsByTagName("DataEmissao")?.Count > 0
                     ? infNfse.GetElementsByTagName("DataEmissao").Item(0).InnerText : null;
                 dict.Add("DtEmissao", dtEmissao);
 
@@ -48,13 +78,13 @@ namespace NFSeToXLSXConverterMacOs.Domain
 
                 }
 
-                var outrasInformacoes = infNfse.GetElementsByTagName("OutrasInformacoes").Count > 0
+                var outrasInformacoes = infNfse?.GetElementsByTagName("OutrasInformacoes")?.Count > 0
                     ? infNfse.GetElementsByTagName("OutrasInformacoes").Item(0).InnerText : null;
                 dict.Add("OutrasInformacoes", outrasInformacoes);
 
 
 
-                XmlElement valoresNfse = infNfse.GetElementsByTagName("ValoresNfse").Count > 0
+                XmlElement valoresNfse = infNfse?.GetElementsByTagName("ValoresNfse")?.Count > 0
                     ? (XmlElement)infNfse.GetElementsByTagName("ValoresNfse").Item(0) : null;
 
                 var baseCalculo = valoresNfse?.GetElementsByTagName("BaseCalculo").Count > 0
@@ -62,44 +92,44 @@ namespace NFSeToXLSXConverterMacOs.Domain
 
                 dict.Add("ValorBaseCalculo", Convert.ToString(baseCalculo));
 
-                var aliquota = valoresNfse.GetElementsByTagName("Aliquota").Count > 0
+                var aliquota = valoresNfse?.GetElementsByTagName("Aliquota")?.Count > 0
                 ? decimal.Parse(valoresNfse.GetElementsByTagName("Aliquota").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
 
                 dict.Add("Aliquota", Convert.ToString(aliquota));
 
-                var valorIss = valoresNfse.GetElementsByTagName("ValorIss").Count > 0
+                var valorIss = valoresNfse?.GetElementsByTagName("ValorIss")?.Count > 0
                 ? decimal.Parse(valoresNfse.GetElementsByTagName("ValorIss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                 dict.Add("ValorIss", Convert.ToString(valorIss));
 
-                var valorLiquidoNfse = valoresNfse.GetElementsByTagName("ValorLiquidoNfse").Count > 0
+                var valorLiquidoNfse = valoresNfse?.GetElementsByTagName("ValorLiquidoNfse")?.Count > 0
                 ? decimal.Parse(valoresNfse.GetElementsByTagName("ValorLiquidoNfse").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                 dict.Add("ValorLiquidoNfse", Convert.ToString(valorLiquidoNfse));
 
 
                 decimal? valorCredito = null;
 
-                XmlElement? prestadorServico = infNfse.GetElementsByTagName("PrestadorServico").Count > 0
+                XmlElement? prestadorServico = infNfse?.GetElementsByTagName("PrestadorServico")?.Count > 0
                     ? (XmlElement?)infNfse.GetElementsByTagName("PrestadorServico").Item(0) : null;
 
                 if (prestadorServico != null)
                 {
-                    var cnpjPrestador = prestadorServico.GetElementsByTagName("Cpf").Count > 0
+                    var cnpjPrestador = prestadorServico?.GetElementsByTagName("Cpf")?.Count > 0
                     ? prestadorServico.GetElementsByTagName("Cpf").Item(0).InnerText : null;
                     dict.Add("CnpjPrestador", cnpjPrestador);
 
-                    if (prestadorServico.GetElementsByTagName("Cnpj").Count > 0)
+                    if (prestadorServico?.GetElementsByTagName("Cnpj")?.Count > 0)
                     {
-                        cnpjPrestador = prestadorServico.GetElementsByTagName("Cnpj").Count > 0
+                        cnpjPrestador = prestadorServico?.GetElementsByTagName("Cnpj")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("Cnpj").Item(0).InnerText : null;
 
                         dict["CnpjPrestador"] = cnpjPrestador;
                     }
 
-                    var inscricaoMunicipalPrestador = prestadorServico.GetElementsByTagName("InscricaoMunicipal").Count > 0
+                    var inscricaoMunicipalPrestador = prestadorServico?.GetElementsByTagName("InscricaoMunicipal")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("InscricaoMunicipal").Item(0).InnerText : null;
                     dict.Add("InscricaoMunicipalPrestador", inscricaoMunicipalPrestador);
 
-                    var razaoSocialPrestador = prestadorServico.GetElementsByTagName("RazaoSocial").Count > 0
+                    var razaoSocialPrestador = prestadorServico?.GetElementsByTagName("RazaoSocial")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("RazaoSocial").Item(0).InnerText : null;
                     dict.Add("RazaoSocialPrestador", razaoSocialPrestador);
 
@@ -127,81 +157,81 @@ namespace NFSeToXLSXConverterMacOs.Domain
                     //	? prestadorServico.GetElementsByTagName("Uf").Item(0).InnerText : null;
                     //dict.Add("UfPrestador", ufPrestador);
 
-                    var codigoPaisPrestador = prestadorServico.GetElementsByTagName("CodigoPais").Count > 0
+                    var codigoPaisPrestador = prestadorServico?.GetElementsByTagName("CodigoPais")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("CodigoPais").Item(0).InnerText : null;
                     dict.Add("CodigoPaisPrestador", codigoPaisPrestador);
 
-                    var cepPrestador = prestadorServico.GetElementsByTagName("Cep").Count > 0
+                    var cepPrestador = prestadorServico?.GetElementsByTagName("Cep")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("Cep").Item(0).InnerText : null;
                     dict.Add("CepPrestador", cepPrestador);
 
-                    var telefonePrestador = prestadorServico.GetElementsByTagName("Telefone").Count > 0
+                    var telefonePrestador = prestadorServico?.GetElementsByTagName("Telefone")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("Telefone").Item(0).InnerText : null;
                     dict.Add("TelefonePrestador", telefonePrestador);
 
-                    var emailPrestador = prestadorServico.GetElementsByTagName("Email").Count > 0
+                    var emailPrestador = prestadorServico?.GetElementsByTagName("Email")?.Count > 0
                         ? prestadorServico.GetElementsByTagName("Email").Item(0).InnerText : null;
                     dict.Add("EmailPrestador", emailPrestador);
 
                 }
 
-                XmlElement declaracaoPrestacaoServico = infNfse.GetElementsByTagName("DeclaracaoPrestacaoServico").Count > 0
+                XmlElement declaracaoPrestacaoServico = infNfse?.GetElementsByTagName("DeclaracaoPrestacaoServico")?.Count > 0
                         ? (XmlElement)infNfse.GetElementsByTagName("DeclaracaoPrestacaoServico").Item(0) : null;
 
                 if (declaracaoPrestacaoServico != null)
                 {
-                    XmlElement rps = declaracaoPrestacaoServico.GetElementsByTagName("Rps").Count > 0
+                    XmlElement rps = declaracaoPrestacaoServico?.GetElementsByTagName("Rps")?.Count > 0
                     ? (XmlElement)declaracaoPrestacaoServico.GetElementsByTagName("Rps").Item(0) : null;
 
 
 
-                    if (declaracaoPrestacaoServico.GetElementsByTagName("Competencia").Count > 0)
+                    if (declaracaoPrestacaoServico?.GetElementsByTagName("Competencia")?.Count > 0)
                     {
                         var competencia = DateTime.ParseExact(declaracaoPrestacaoServico.GetElementsByTagName("Competencia").Item(0).InnerText, "yyyy-MM-dd", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"));
                         dict.Add("Competencia", competencia.ToString("dd/MM/yyyy"));
                     }
 
 
-                    XmlElement? servico = declaracaoPrestacaoServico.GetElementsByTagName("Servico").Count > 0
+                    XmlElement? servico = declaracaoPrestacaoServico?.GetElementsByTagName("Servico")?.Count > 0
                     ? (XmlElement?)declaracaoPrestacaoServico.GetElementsByTagName("Servico").Item(0) : null;
 
                     if (servico != null)
                     {
-                        var valorServicos = servico.GetElementsByTagName("ValorServicos").Count > 0
+                        var valorServicos = servico?.GetElementsByTagName("ValorServicos")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorServicos").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorServicos", Convert.ToString(valorServicos));
 
-                        var valorDeducoes = servico.GetElementsByTagName("ValorDeducoes").Count > 0
+                        var valorDeducoes = servico?.GetElementsByTagName("ValorDeducoes")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorDeducoes").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorDeducoes", Convert.ToString(valorDeducoes));
 
-                        var valorPis = servico.GetElementsByTagName("ValorPis").Count > 0
+                        var valorPis = servico?.GetElementsByTagName("ValorPis")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorPis").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorPis", Convert.ToString(valorPis));
 
-                        var valorCofins = servico.GetElementsByTagName("ValorCofins").Count > 0
+                        var valorCofins = servico?.GetElementsByTagName("ValorCofins")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorCofins").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorCofins", Convert.ToString(valorCofins));
 
-                        var valorInss = servico.GetElementsByTagName("ValorInss").Count > 0
+                        var valorInss = servico?.GetElementsByTagName("ValorInss")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorInss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorInss", Convert.ToString(valorInss));
 
-                        var valorIr = servico.GetElementsByTagName("ValorIr").Count > 0
+                        var valorIr = servico?.GetElementsByTagName("ValorIr")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorIr").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorIr", Convert.ToString(valorIr));
 
-                        var valorCsll = servico.GetElementsByTagName("ValorCsll").Count > 0
+                        var valorCsll = servico?.GetElementsByTagName("ValorCsll")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("ValorCsll").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("ValorCsll", Convert.ToString(valorCsll));
 
-                        var outrasRetencoes = servico.GetElementsByTagName("OutrasRetencoes").Count > 0
+                        var outrasRetencoes = servico?.GetElementsByTagName("OutrasRetencoes")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("OutrasRetencoes").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("OutrasRetencoes", Convert.ToString(outrasInformacoes));
 
                         if (valorIss == null || valorIss == 0)
                         {
-                            valorIss = servico.GetElementsByTagName("ValorIss").Count > 0
+                            valorIss = servico?.GetElementsByTagName("ValorIss")?.Count > 0
                             ? decimal.Parse(servico.GetElementsByTagName("ValorIss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                             dict.Add("ValorIss", Convert.ToString(valorIss));
                         }
@@ -213,16 +243,16 @@ namespace NFSeToXLSXConverterMacOs.Domain
                             dict.Add("Aliquota", Convert.ToString(aliquota));
                         }
 
-                        var descontoCondicionado = servico.GetElementsByTagName("DescontoCondicionado").Count > 0
+                        var descontoCondicionado = servico?.GetElementsByTagName("DescontoCondicionado")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("DescontoCondicionado").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("DescontoCondicionado", Convert.ToString(descontoCondicionado));
 
-                        var descontoIncondicionado = servico.GetElementsByTagName("DescontoIncondicionado").Count > 0
+                        var descontoIncondicionado = servico?.GetElementsByTagName("DescontoIncondicionado")?.Count > 0
                         ? decimal.Parse(servico.GetElementsByTagName("DescontoIncondicionado").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
                         dict.Add("DescontoIncondicionado", Convert.ToString(descontoIncondicionado));
 
 
-                        var issRetido = servico.GetElementsByTagName("IssRetido").Count > 0
+                        var issRetido = servico?.GetElementsByTagName("IssRetido")?.Count > 0
                         ? int.Parse(servico.GetElementsByTagName("IssRetido").Item(0).InnerText) : 0;
                         dict.Add("IssRetido", ((issRetido == 1) ? "Sim" : "Não"));
 
@@ -231,23 +261,23 @@ namespace NFSeToXLSXConverterMacOs.Domain
                         //	this.responsavelRetencao = int.Parse(servico.GetElementsByTagName("ResponsavelRetencao").Item(0).InnerText);
                         //}
 
-                        var itemListaServico = servico.GetElementsByTagName("ItemListaServico").Count > 0
+                        var itemListaServico = servico?.GetElementsByTagName("ItemListaServico")?.Count > 0
                         ? servico.GetElementsByTagName("ItemListaServico").Item(0).InnerText : null;
                         dict.Add("ItemListaServico", itemListaServico);
 
-                        var codigoCnae = servico.GetElementsByTagName("CodigoCnae").Count > 0
+                        var codigoCnae = servico?.GetElementsByTagName("CodigoCnae")?.Count > 0
                         ? servico.GetElementsByTagName("CodigoCnae").Item(0).InnerText : null;
                         dict.Add("CodigoCnae", codigoCnae);
 
-                        var codigoTributacaoMunicipio = servico.GetElementsByTagName("CodigoTributacaoMunicipio").Count > 0
+                        var codigoTributacaoMunicipio = servico?.GetElementsByTagName("CodigoTributacaoMunicipio")?.Count > 0
                         ? servico.GetElementsByTagName("CodigoTributacaoMunicipio").Item(0).InnerText : null;
                         dict.Add("CodigoTributacaoMunicipio", codigoTributacaoMunicipio);
 
-                        var discriminacao = servico.GetElementsByTagName("Discriminacao").Count > 0
+                        var discriminacao = servico?.GetElementsByTagName("Discriminacao")?.Count > 0
                         ? servico.GetElementsByTagName("Discriminacao").Item(0).InnerText : null;
                         dict.Add("Discriminacao", discriminacao);
 
-                        var codigoMunicipioPrestacao = servico.GetElementsByTagName("CodigoMunicipio").Count > 0
+                        var codigoMunicipioPrestacao = servico?.GetElementsByTagName("CodigoMunicipio")?.Count > 0
                         ? servico.GetElementsByTagName("CodigoMunicipio").Item(0).InnerText : null;
                         dict.Add("CodigoMunicipioPrestacao", codigoMunicipioPrestacao);
 
@@ -256,11 +286,11 @@ namespace NFSeToXLSXConverterMacOs.Domain
                         //dict.Add("CodigoPais", codigoPaisPrestacao);
 
 
-                        var exigibilidadeIss = servico.GetElementsByTagName("ExigibilidadeISS").Count > 0
+                        var exigibilidadeIss = servico?.GetElementsByTagName("ExigibilidadeISS")?.Count > 0
                         ? int.Parse(servico.GetElementsByTagName("ExigibilidadeISS").Item(0).InnerText) : 0;
                         dict.Add("ExigibilidadeIss", ExigibilidadeIss.GetValue(exigibilidadeIss));
 
-                        var codigoMunicipioIncidencia = servico.GetElementsByTagName("MunicipioIncidencia").Count > 0
+                        var codigoMunicipioIncidencia = servico?.GetElementsByTagName("MunicipioIncidencia")?.Count > 0
                         ? servico.GetElementsByTagName("MunicipioIncidencia").Item(0).InnerText : null;
                         dict.Add("CodigoMunicipioIncidencia", codigoMunicipioIncidencia);
 
@@ -272,25 +302,25 @@ namespace NFSeToXLSXConverterMacOs.Domain
                     }
 
 
-                    XmlElement tomador = declaracaoPrestacaoServico.GetElementsByTagName("Tomador").Count > 0
+                    XmlElement tomador = declaracaoPrestacaoServico?.GetElementsByTagName("Tomador")?.Count > 0
                         ? (XmlElement)declaracaoPrestacaoServico.GetElementsByTagName("Tomador").Item(0) : null;
 
 
-                    var cpfCnpjTomador = tomador.GetElementsByTagName("Cpf").Count > 0
+                    var cpfCnpjTomador = tomador?.GetElementsByTagName("Cpf")?.Count > 0
                     ? tomador.GetElementsByTagName("Cpf").Item(0).InnerText : null;
                     dict.Add("CpfCnpjTomador", cpfCnpjTomador);
 
                     if (tomador.GetElementsByTagName("Cnpj").Count > 0)
                     {
-                        cpfCnpjTomador = tomador.GetElementsByTagName("Cnpj").Item(0).InnerText;
+                        cpfCnpjTomador = tomador?.GetElementsByTagName("Cnpj").Item(0).InnerText;
                         dict["CpfCnpjTomador"] = cpfCnpjTomador;
                     }
 
-                    var inscricaoMunicipalTomador = tomador.GetElementsByTagName("InscricaoMunicipal").Count > 0
+                    var inscricaoMunicipalTomador = tomador?.GetElementsByTagName("InscricaoMunicipal")?.Count > 0
                     ? tomador.GetElementsByTagName("InscricaoMunicipal").Item(0).InnerText : null;
                     dict.Add("InscricaoMunicipalTomador", inscricaoMunicipalTomador);
 
-                    var razaoSocialTomador = tomador.GetElementsByTagName("RazaoSocial").Count > 0
+                    var razaoSocialTomador = tomador?.GetElementsByTagName("RazaoSocial")?.Count > 0
                     ? tomador.GetElementsByTagName("RazaoSocial").Item(0).InnerText : null;
                     dict.Add("RazaoSocialTomador", razaoSocialTomador);
 
@@ -340,6 +370,247 @@ namespace NFSeToXLSXConverterMacOs.Domain
             }
 
             return dict;
+
         }
+
+        private static Dictionary<string, string?> parseV100(Dictionary<string, string?> dict, XmlElement? infNfse)
+        {
+            if (infNfse != null && infNfse.ChildNodes.Count > 0)
+            {
+                var numeroNfse = infNfse?.GetElementsByTagName("Numero")?.Count > 0
+                        ? infNfse.GetElementsByTagName("Numero").Item(0).InnerText : null;
+                dict.Add("NumeroNfse", numeroNfse);
+
+                var codigoVerificacao = infNfse?.GetElementsByTagName("CodigoVerificacao")?.Count > 0
+                    ? infNfse.GetElementsByTagName("CodigoVerificacao").Item(0).InnerText : null;
+                dict.Add("CodigoVerificacao", codigoVerificacao);
+
+                var dtEmissao = infNfse?.GetElementsByTagName("DataEmissao")?.Count > 0
+                    ? infNfse.GetElementsByTagName("DataEmissao").Item(0).InnerText : null;
+                dict.Add("DtEmissao", dtEmissao);
+
+                if (!String.IsNullOrEmpty(dtEmissao))
+                {
+                    var dataEmissaoNfse = DateTime.Parse(dtEmissao, System.Globalization.CultureInfo.GetCultureInfo("pt-BR"));
+                    if (!dict.ContainsKey("DtEmissao"))
+                    {
+                        dict.Add("DtEmissao", dataEmissaoNfse.ToString("dd/MM/yyyy HH:mm:ss"));
+                    }
+                    else
+                    {
+                        dict["DtEmissao"] = dataEmissaoNfse.ToString("dd/MM/yyyy HH:mm:ss");
+                    }
+
+                }
+
+                var naturezaOperacao = infNfse?.GetElementsByTagName("NaturezaOperacao")?.Count > 0
+                        ? int.Parse(infNfse.GetElementsByTagName("NaturezaOperacao").Item(0).InnerText) : 0;
+                dict.Add("NaturezaOperacao", NaturezaOperacao.GetValue(naturezaOperacao));
+
+
+                if (infNfse?.GetElementsByTagName("Competencia")?.Count > 0)
+                {
+                    //var comp = 
+                    var competencia = DateTime.ParseExact(infNfse.GetElementsByTagName("Competencia").Item(0).InnerText, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"));
+                    
+                    
+                    dict.Add("Competencia", competencia.ToString("dd/MM/yyyy"));
+                }
+
+
+                var outrasInformacoes = infNfse?.GetElementsByTagName("OutrasInformacoes")?.Count > 0
+                    ? infNfse.GetElementsByTagName("OutrasInformacoes").Item(0).InnerText : null;
+                dict.Add("OutrasInformacoes", outrasInformacoes);
+
+
+
+                //XmlElement valoresNfse = infNfse?.GetElementsByTagName("ValoresNfse")?.Count > 0
+                //    ? (XmlElement)infNfse.GetElementsByTagName("ValoresNfse").Item(0) : null;
+
+                //var baseCalculo = valoresNfse?.GetElementsByTagName("BaseCalculo").Count > 0
+                //? decimal.Parse(valoresNfse.GetElementsByTagName("BaseCalculo").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+
+                //dict.Add("ValorBaseCalculo", Convert.ToString(baseCalculo));
+
+                //var aliquota = valoresNfse?.GetElementsByTagName("Aliquota")?.Count > 0
+                //? decimal.Parse(valoresNfse.GetElementsByTagName("Aliquota").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+
+                //dict.Add("Aliquota", Convert.ToString(aliquota));
+
+                //var valorIss = valoresNfse?.GetElementsByTagName("ValorIss")?.Count > 0
+                //? decimal.Parse(valoresNfse.GetElementsByTagName("ValorIss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                //dict.Add("ValorIss", Convert.ToString(valorIss));
+
+                //var valorLiquidoNfse = valoresNfse?.GetElementsByTagName("ValorLiquidoNfse")?.Count > 0
+                //? decimal.Parse(valoresNfse.GetElementsByTagName("ValorLiquidoNfse").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                //dict.Add("ValorLiquidoNfse", Convert.ToString(valorLiquidoNfse));
+
+
+                // decimal? valorCredito = null;
+
+                XmlElement? servico = infNfse?.GetElementsByTagName("Servico")?.Count > 0
+                    ? (XmlElement?)infNfse.GetElementsByTagName("Servico").Item(0) : null;
+
+                XmlElement? valoresServicos = servico?.GetElementsByTagName("Valores")?.Count > 0
+                    ? (XmlElement?)servico.GetElementsByTagName("Valores").Item(0) : null;
+
+
+                var valorServicos = valoresServicos?.GetElementsByTagName("ValorServicos")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorServicos").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorServicos", Convert.ToString(valorServicos));
+
+                var valorDeducoes = valoresServicos?.GetElementsByTagName("ValorDeducoes")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorDeducoes").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorDeducoes", Convert.ToString(valorDeducoes));
+
+                var valorPis = valoresServicos?.GetElementsByTagName("ValorPis")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorPis").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorPis", Convert.ToString(valorPis));
+
+                var valorCofins = valoresServicos?.GetElementsByTagName("ValorCofins")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorCofins").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorCofins", Convert.ToString(valorCofins));
+
+                var valorInss = valoresServicos?.GetElementsByTagName("ValorInss")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorInss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorInss", Convert.ToString(valorInss));
+
+                var valorIr = valoresServicos?.GetElementsByTagName("ValorIr")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorIr").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorIr", Convert.ToString(valorIr));
+
+                var valorCsll = valoresServicos?.GetElementsByTagName("ValorCsll")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorCsll").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorCsll", Convert.ToString(valorCsll));
+
+                var outrasRetencoes = valoresServicos?.GetElementsByTagName("OutrasRetencoes")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("OutrasRetencoes").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("OutrasRetencoes", Convert.ToString(outrasInformacoes));
+
+                
+                var valorIss = valoresServicos?.GetElementsByTagName("ValorIss")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorIss").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorIss", Convert.ToString(valorIss));
+                
+                var valorIssRetido = valoresServicos?.GetElementsByTagName("ValorIssRetido")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("ValorIssRetido").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("ValorIssRetido", Convert.ToString(valorIssRetido));
+
+
+                
+                var aliquota = valoresServicos.GetElementsByTagName("Aliquota").Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("Aliquota").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("Aliquota", Convert.ToString(aliquota));
+
+                var descontoCondicionado = valoresServicos?.GetElementsByTagName("DescontoCondicionado")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("DescontoCondicionado").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("DescontoCondicionado", Convert.ToString(descontoCondicionado));
+
+                var descontoIncondicionado = valoresServicos?.GetElementsByTagName("DescontoIncondicionado")?.Count > 0
+                ? decimal.Parse(valoresServicos.GetElementsByTagName("DescontoIncondicionado").Item(0).InnerText ?? "0", new CultureInfo("en-US")) : 0;
+                dict.Add("DescontoIncondicionado", Convert.ToString(descontoIncondicionado));
+
+
+                var issRetido = valoresServicos?.GetElementsByTagName("IssRetido")?.Count > 0
+                ? int.Parse(valoresServicos.GetElementsByTagName("IssRetido").Item(0).InnerText) : 0;
+                dict.Add("IssRetido", ((issRetido == 1) ? "Sim" : "Não"));
+
+                //if (servico.GetElementsByTagName("ResponsavelRetencao").Count > 0)
+                //{
+                //	this.responsavelRetencao = int.Parse(servico.GetElementsByTagName("ResponsavelRetencao").Item(0).InnerText);
+                //}
+
+                var itemListaServico = servico?.GetElementsByTagName("ItemListaServico")?.Count > 0
+                ? servico.GetElementsByTagName("ItemListaServico").Item(0).InnerText : null;
+                dict.Add("ItemListaServico", itemListaServico);
+
+                var codigoCnae = servico?.GetElementsByTagName("CodigoCnae")?.Count > 0
+                ? servico.GetElementsByTagName("CodigoCnae").Item(0).InnerText : null;
+                dict.Add("CodigoCnae", codigoCnae);
+
+                var codigoTributacaoMunicipio = servico?.GetElementsByTagName("CodigoTributacaoMunicipio")?.Count > 0
+                ? servico.GetElementsByTagName("CodigoTributacaoMunicipio").Item(0).InnerText : null;
+                dict.Add("CodigoTributacaoMunicipio", codigoTributacaoMunicipio);
+
+                var discriminacao = servico?.GetElementsByTagName("Discriminacao")?.Count > 0
+                ? servico.GetElementsByTagName("Discriminacao").Item(0).InnerText : null;
+                dict.Add("Discriminacao", discriminacao);
+
+                var codigoMunicipioPrestacao = servico?.GetElementsByTagName("CodigoMunicipio")?.Count > 0
+                ? servico.GetElementsByTagName("CodigoMunicipio").Item(0).InnerText : null;
+                dict.Add("CodigoMunicipioPrestacao", codigoMunicipioPrestacao);
+
+                                
+
+                XmlElement? prestadorServico = infNfse?.GetElementsByTagName("PrestadorServico")?.Count > 0
+                    ? (XmlElement?)infNfse.GetElementsByTagName("PrestadorServico").Item(0) : null;
+
+                var cnpjPrestador = prestadorServico?.GetElementsByTagName("Cpf")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("Cpf").Item(0).InnerText : null;
+                dict.Add("CnpjPrestador", cnpjPrestador);
+
+                if (prestadorServico?.GetElementsByTagName("Cnpj")?.Count > 0)
+                {
+                    cnpjPrestador = prestadorServico?.GetElementsByTagName("Cnpj")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("Cnpj").Item(0).InnerText : null;
+
+                    dict["CnpjPrestador"] = cnpjPrestador;
+                }
+
+                var inscricaoMunicipalPrestador = prestadorServico?.GetElementsByTagName("InscricaoMunicipal")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("InscricaoMunicipal").Item(0).InnerText : null;
+                dict.Add("InscricaoMunicipalPrestador", inscricaoMunicipalPrestador);
+
+                var razaoSocialPrestador = prestadorServico?.GetElementsByTagName("RazaoSocial")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("RazaoSocial").Item(0).InnerText : null;
+                dict.Add("RazaoSocialPrestador", razaoSocialPrestador);
+
+                
+
+                var cepPrestador = prestadorServico?.GetElementsByTagName("Cep")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("Cep").Item(0).InnerText : null;
+                dict.Add("CepPrestador", cepPrestador);
+
+                var telefonePrestador = prestadorServico?.GetElementsByTagName("Telefone")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("Telefone").Item(0).InnerText : null;
+                dict.Add("TelefonePrestador", telefonePrestador);
+
+                var emailPrestador = prestadorServico?.GetElementsByTagName("Email")?.Count > 0
+                    ? prestadorServico.GetElementsByTagName("Email").Item(0).InnerText : null;
+                dict.Add("EmailPrestador", emailPrestador);
+
+
+
+                XmlElement tomador = infNfse?.GetElementsByTagName("Tomador")?.Count > 0
+                        ? (XmlElement)infNfse.GetElementsByTagName("Tomador").Item(0) : null;
+
+
+                var cpfCnpjTomador = tomador?.GetElementsByTagName("Cpf")?.Count > 0
+                ? tomador.GetElementsByTagName("Cpf").Item(0).InnerText : null;
+                dict.Add("CpfCnpjTomador", cpfCnpjTomador);
+
+                if (tomador?.GetElementsByTagName("Cnpj").Count > 0)
+                {
+                    cpfCnpjTomador = tomador?.GetElementsByTagName("Cnpj").Item(0).InnerText;
+                    dict["CpfCnpjTomador"] = cpfCnpjTomador;
+                }
+
+                var inscricaoMunicipalTomador = tomador?.GetElementsByTagName("InscricaoMunicipal")?.Count > 0
+                ? tomador.GetElementsByTagName("InscricaoMunicipal").Item(0).InnerText : null;
+                dict.Add("InscricaoMunicipalTomador", inscricaoMunicipalTomador);
+
+                var razaoSocialTomador = tomador?.GetElementsByTagName("RazaoSocial")?.Count > 0
+                ? tomador.GetElementsByTagName("RazaoSocial").Item(0).InnerText : null;
+                dict.Add("RazaoSocialTomador", razaoSocialTomador);
+
+
+            }
+
+            return dict;
+
+        }
+
+
+
     }
 }

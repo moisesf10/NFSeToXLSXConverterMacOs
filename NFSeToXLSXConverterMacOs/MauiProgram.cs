@@ -18,9 +18,9 @@ namespace NFSeToXLSXConverterMacOs
             //	fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             //});
 
-            builder.Services.AddSingleton<MainApp>();
+            builder.Services.AddTransient<MainApp>();
             builder.Services.AddSingleton<IFileSaver>(FileSaver.Default);
-            builder.Services.AddSingleton<Excel>();
+            builder.Services.AddTransient<Excel>();
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG

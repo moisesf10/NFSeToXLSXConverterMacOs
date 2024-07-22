@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@inject MainApp mainApp
+@inject IServiceProvider ServiceProvider
 
 <h1>NFS-e To XLSX Converter</h1>
 
@@ -158,7 +158,7 @@
 
 
 
-        //MainApp mainApp = new MainApp();
+        MainApp mainApp = ServiceProvider.GetRequiredService<MainApp>();
         // Determinar a extensão do arquivo
         var fileName = selectedFile.Name;
         var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
