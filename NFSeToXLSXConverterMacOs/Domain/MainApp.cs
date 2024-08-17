@@ -45,7 +45,7 @@ namespace NFSeToXLSXConverterMacOs.Domain
         {
 
             
-            var stream = file?.OpenReadStream();
+            var stream = file?.OpenReadStream(100000000);
 
             ImportZip importerZip = new ImportZip();
             await importerZip.loadFile(stream);
