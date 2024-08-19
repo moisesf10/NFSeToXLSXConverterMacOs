@@ -78,7 +78,7 @@ jobs:
       run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
 
     - name: Pack MSIX
-      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
+      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" -f net8.0-windows10.0.19041.0 /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
 
     - name: Upload MSIX to Artifacts
       uses: actions/upload-artifact@v2
