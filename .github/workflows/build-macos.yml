@@ -13,11 +13,12 @@ jobs:
     runs-on: macos-13
 
     steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Update Xcode Versions
       uses: josephduffy/update-xcode-version-action@master
-
-    # - name: Checkout code
-    #   uses: actions/checkout@v2
 
     # - name: Setup .NET
     #   uses: actions/setup-dotnet@v2
