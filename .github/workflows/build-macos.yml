@@ -38,11 +38,11 @@ jobs:
     #   run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
 
     - name: Build project
-      run: dotnet build --configuration Release
+      run: dotnet build -p:MtouchLink=None --configuration Release
 
     - name: Publish project
       # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-      run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
+      run: dotnet publish -c Release -p:MtouchLink=None -f net8.0-maccatalyst -o ./publish
 
     - name: Create DMG package
       run: |
