@@ -1,5 +1,5 @@
 workflows:
-  workflows/release.yml:
+  workflows/build-macos.yml:
     jobs:
       release:
         strategy:

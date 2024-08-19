@@ -20,37 +20,37 @@ jobs:
     - name: Update Xcode Versions
       uses: josephduffy/update-xcode-version-action@master
 
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v2
-    #   with:
-    #     dotnet-version: '8.0.x' # Use a versão correta do .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x' # Use a versão correta do .NET
 
-    # - name: Install MAUI workloads
-    #   run: dotnet workload install maui-maccatalyst
+    - name: Install MAUI workloads
+      run: dotnet workload install maui-maccatalyst
 
-    # - name: Restore dependencies and workloads
-    #   run: dotnet workload restore
+    - name: Restore dependencies and workloads
+      run: dotnet workload restore
 
-    # - name: List Xcode installations
-    #   run: sudo ls -1 /Applications | grep "Xcode"
+    - name: List Xcode installations
+      run: sudo ls -1 /Applications | grep "Xcode"
 
     # - name: Select Xcode 15.1
     #   run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
 
-    # - name: Build project
-    #   run: dotnet build --configuration Release
+    - name: Build project
+      run: dotnet build --configuration Release
 
-    # - name: Publish project
-    #   # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-    #   run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
+    - name: Publish project
+      # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
+      run: dotnet publish -c Release -f net8.0-maccatalyst -o ./publish
 
-    # - name: Create DMG package
-    #   run: |
-    #     mkdir -p output
-    #     hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+    - name: Create DMG package
+      run: |
+        mkdir -p output
+        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
 
-    # - name: Upload artifact
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: macos-installer
-    #     path: ./output/NFSe_To_XLSX_Converter.dmg
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-installer
+        path: ./output/NFSe_To_XLSX_Converter.dmg
