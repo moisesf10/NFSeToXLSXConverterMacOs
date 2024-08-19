@@ -72,22 +72,22 @@ jobs:
       run: dotnet workload install maui
 
     - name: Restore NuGet packages
-      run: dotnet restore NFSeToXLSXConverterMacOs.csproj
+      run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
     - name: Build Project
-      run: dotnet build NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
+      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
 
     - name: Pack MSIX
-      run: dotnet publish NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
+      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
 
     - name: Upload MSIX to Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: msix-package
-        path: path/to/your/output/*.msix
+        path: ./output/*.msix
 
     - name: Sign MSIX Package
-      run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs_1.0.4.0_x64.cer /p ${{ secrets.PFX_PASSWORD }} ./output/*.msix
+      run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs_1.0.4.0_x64.cer /p ${{ secrets.PFX_PASSWORD }} ./output/*.msix
 
     - name: Upload Signed MSIX
       uses: actions/upload-artifact@v2
