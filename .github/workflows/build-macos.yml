@@ -21,8 +21,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Update Xcode Versions
-      uses: josephduffy/update-xcode-version-action@master
+    - name: List Xcode installations
+      run: sudo ls -1 /Applications | grep "Xcode"
+
+    # - name: Select Xcode 15.1
+    #   run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
+
+    - name: Update Xcode Versions ${{ matrix.xcode }}
+      run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
@@ -34,12 +40,6 @@ jobs:
 
     - name: Restore dependencies and workloads
       run: dotnet workload restore
-
-    - name: List Xcode installations
-      run: sudo ls -1 /Applications | grep "Xcode"
-
-    # - name: Select Xcode 15.1
-    #   run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
 
     - name: Build project
       run: dotnet build -p:MtouchLink=None --configuration Release
