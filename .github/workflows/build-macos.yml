@@ -11,6 +11,10 @@ on:
 jobs:
   build-macos:
     runs-on: macos-13
+    strategy:
+      # fail-fast: false
+      matrix:
+        xcode: ["15.4"]
 
     steps:
     
