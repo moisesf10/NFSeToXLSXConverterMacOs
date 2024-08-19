@@ -19,6 +19,7 @@ Global
 		{59E0F716-171C-4EDA-AEBA-25E2CE3BFD2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{59E0F716-171C-4EDA-AEBA-25E2CE3BFD2F}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{59E0F716-171C-4EDA-AEBA-25E2CE3BFD2F}.WinX64|Any CPU.ActiveCfg = Release|Any CPU
+		{59E0F716-171C-4EDA-AEBA-25E2CE3BFD2F}.WinX64|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

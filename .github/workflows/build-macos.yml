@@ -9,52 +9,88 @@ on:
       - main
 
 jobs:
-  build-macos:
-    runs-on: macos-14
-    strategy:
-      # fail-fast: false
-      matrix:
-        xcode: ["15.4"]
+  # build-macos:
+  #   runs-on: macos-14
+  #   strategy:
+  #     # fail-fast: false
+  #     matrix:
+  #       xcode: ["15.4"]
 
-    steps:
+  #   steps:
     
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+
+  #   - name: List Xcode installations
+  #     run: sudo ls -1 /Applications | grep "Xcode"
+
+  #   - name: Update Xcode Versions ${{ matrix.xcode }}
+  #     run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v2
+  #     with:
+  #       dotnet-version: '8.0.x' # Use a versão correta do .NET
+
+  #   - name: Install MAUI workloads
+  #     run: dotnet workload install maui-maccatalyst
+
+  #   - name: Restore dependencies and workloads
+  #     run: dotnet workload restore
+
+  #   - name: Build project
+  #     run: dotnet build -p:MtouchLink=None -p:PublishSingleFile=true --configuration Release
+
+  #   - name: Publish project
+  #     # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
+  #     run: dotnet publish -c Release -p:MtouchLink=None -p:PublishSingleFile=true -f net8.0-maccatalyst -o ./publish
+
+  #   - name: Create DMG package
+  #     run: |
+  #       mkdir -p output
+  #       hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+
+  #   - name: Upload artifact
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: macos-installer
+  #       path: ./output/NFSe_To_XLSX_Converter.dmg
+  
+
+  build-and-package:
+    runs-on: windows-latest
+    steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: List Xcode installations
-      run: sudo ls -1 /Applications | grep "Xcode"
-
-    # - name: Select Xcode 15.1
-    #   run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer
-
-    - name: Update Xcode Versions ${{ matrix.xcode }}
-      run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
-
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '8.0.x' # Use a versão correta do .NET
+        dotnet-version: 8.0.x
 
-    - name: Install MAUI workloads
-      run: dotnet workload install maui-maccatalyst
+    - name: Install MAUI Workloads
+      run: dotnet workload install maui
 
-    - name: Restore dependencies and workloads
-      run: dotnet workload restore
+    - name: Restore NuGet packages
+      run: dotnet restore NFSeToXLSXConverterMacOs.csproj
 
-    - name: Build project
-      run: dotnet build -p:MtouchLink=None --configuration Release
+    - name: Build Project
+      run: dotnet build NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
 
-    - name: Publish project
-      # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-      run: dotnet publish -c Release -p:MtouchLink=None -f net8.0-maccatalyst -o ./publish
+    - name: Pack MSIX
+      run: dotnet publish NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
 
-    - name: Create DMG package
-      run: |
-        mkdir -p output
-        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
-
-    - name: Upload artifact
+    - name: Upload MSIX to Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: macos-installer
-        path: ./output/NFSe_To_XLSX_Converter.dmg
+        name: msix-package
+        path: path/to/your/output/*.msix
+
+    - name: Sign MSIX Package
+      run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs_1.0.4.0_x64.cer /p ${{ secrets.PFX_PASSWORD }} ./output/*.msix
+
+    - name: Upload Signed MSIX
+      uses: actions/upload-artifact@v2
+      with:
+        name: signed-msix-package
+        path: ./output/*.msix
