@@ -87,7 +87,7 @@ jobs:
         path: ./output/*.msix
 
     - name: Sign MSIX Package
-      run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs_1.0.4.0_x64.cer /p ${{ secrets.PFX_PASSWORD }} ./output/*.msix
+      run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs/MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
 
     - name: Upload Signed MSIX
       uses: actions/upload-artifact@v2
