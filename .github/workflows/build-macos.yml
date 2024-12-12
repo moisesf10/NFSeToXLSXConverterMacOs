@@ -50,6 +50,7 @@ jobs:
           -r maccatalyst-x64 \
           --self-contained true \
           -p:PublishTrimmed=false \
+          -p:MtouchLink=None \
           -o ./publish-macos
 
     - name: Create DMG package
