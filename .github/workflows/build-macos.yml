@@ -27,7 +27,7 @@ jobs:
     - name: Update Xcode Versions ${{ matrix.xcode }}
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
-        sudo xcodebuild -downloadAllPlatforms
+        sudo xcodebuild -runFirstLaunch
 
     - name: Verify Xcode version
       run: xcodebuild -version
