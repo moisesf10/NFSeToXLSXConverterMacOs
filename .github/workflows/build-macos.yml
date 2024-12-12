@@ -43,17 +43,7 @@ jobs:
 
     - name: Publish project
       # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-      run: |
-        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-          -c Release \
-          -f net8.0-maccatalyst \
-          -r maccatalyst-x64 \
-          --self-contained true \
-          -p:PublishTrimmed=true \
-          -p:PublishSingleFile=true \
-          -p:UseAppHost=true \
-          -p:IncludeNativeLibrariesForSelfExtract=true \
-          -o ./publish
+      run: dotnet publish -c Release -p:PublishTrimmed=true -f net8.0-maccatalyst -o ./publish
 
     - name: Create DMG package
       run: |
