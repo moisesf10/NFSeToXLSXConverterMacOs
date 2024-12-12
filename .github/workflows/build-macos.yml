@@ -28,6 +28,8 @@ jobs:
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
         sudo xcodebuild -runFirstLaunch
+        sudo xcodebuild -license accept
+        sudo xcodebuild -downloadPlatform MacCatalyst
 
     - name: Verify Xcode version
       run: xcodebuild -version
@@ -46,8 +48,8 @@ jobs:
     - name: Restore dependencies and workloads
       run: dotnet workload restore
 
-    - name: List directory contents
-      run: ls -R
+    #- name: List directory contents
+    #  run: ls -R
 
     - name: Publish project
       # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
