@@ -38,7 +38,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.402.0' # Use a versão correta do .NET
+        dotnet-version: '8.0.402' # Use a versão correta do .NET
 
     - name: Install MAUI workloads
       run: dotnet workload install maui-maccatalyst
