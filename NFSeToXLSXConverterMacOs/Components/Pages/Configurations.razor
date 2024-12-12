@@ -1,0 +1,167 @@
+﻿@page "/configurations"
+
+<h1>Configurações</h1>
+
+<script>
+    $(function (){
+        $('#marcar-desmarcar-todos').change(function (){
+            var isChecked = $(this).is(':checked'); 
+            $('.form-check input[type="checkbox"]').each(function (){
+                $(this).prop('checked', isChecked);
+            });
+        });
+    })
+</script>
+
+@code {
+    private CamposUtilizadosDTO configLida = null;
+
+    private Dictionary<string, string> dict = new Dictionary<string, string>
+    {
+        { "NumeroNfse", "" },
+        { "Situacao", "" },
+        { "CodigoVerificacao", "" },
+        { "DtEmissao", "" },
+        { "CnpjPrestador", "" },
+        { "InscricaoMunicipalPrestador", "" },
+        { "RazaoSocialPrestador", "" },
+        { "CpfCnpjTomador", "" },
+        { "InscricaoMunicipalTomador", "" },
+        { "RazaoSocialTomador", "" },
+        { "EnderecoTomador", "" },
+        { "NumeroEnderecoTomador", "" },
+        { "ComplementoEnderecoTomador", "" },
+        { "BairroTomador", "Centro" },
+        { "CodigoMunicipioTomador", "" },
+        { "UfTomador", "" },
+        { "CodigoPaisTomador", "" },
+        { "CepTomador", "" },
+        { "TelefoneTomador", "" },
+        { "EmailTomador", "" },
+        { "RPS", "SP" },
+        { "NumeroRps", "" },
+        { "Competencia", "" },
+        { "ValorServicos", "" },
+        { "ValorBaseCalculo", "" },
+        { "Aliquota", "" },
+        { "ValorIss", "" },
+        { "ValorLiquidoNfse", "" },
+        { "ValorDeducoes", "" },
+        { "ValorPis", "" },
+        { "ValorCofins", "" },
+        { "ValorInss", "" },
+        { "ValorIr", "" },
+        { "ValorCsll", "" },
+        { "OutrasRetencoes", "" },
+        { "DescontoCondicionado", "" },
+        { "DescontoIncondicionado", "" },
+        { "IssRetido", "" },
+        { "OutrasInformacoes", "" },
+        { "Atividade", "" },
+        { "CNAE", "" },
+        { "CodigoTributacaoMunicipio", "" },
+        { "Discriminacao", "" },
+        { "MunicipioPrestacao", "" },
+        { "Exigibilidade", "" },
+        { "MunicipioIncidencia", "" }
+    };
+
+    private Dictionary<string, bool> checkboxStates = new Dictionary<string, bool>();
+
+    protected override void OnInitialized()
+    {
+        // Inicializa o dicionário com valores padrão (false)
+        foreach (var key in dict.Keys)
+        {
+            checkboxStates[key] = false; // Inicialização padrão
+        }
+
+        // Carrega a configuração
+        configLida =  ConfiguracaoService.CarregarConfiguracao();
+
+        if (configLida != null)
+        {
+            // Atualiza os estados com base na configuração carregada
+            foreach (var key in dict.Keys)
+            {
+                var propertyInfo = configLida.GetType().GetProperty(key);
+
+                if (propertyInfo != null)
+                {
+                    checkboxStates[key] = (bool?)propertyInfo.GetValue(configLida) ?? false;
+                }
+            }
+        }
+    }
+
+    private void HandleSubmit()
+    {
+        foreach (var state in checkboxStates)
+        {
+            Console.WriteLine($"{state.Key}: {(state.Value ? "Checked" : "Unchecked")}");
+        }
+    }
+}
+
+@* Layout *@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">Marque os campos que deseja gerar a planilha</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <input type="checkbox" class="form-check-input" id="marcar-desmarcar-todos"/> Marcar/Desmarcar Todos
+        </div>
+    </div>
+    <form>
+        <div class="row mt-4">
+            @if (checkboxStates != null && checkboxStates.Count > 0)
+            {
+                @foreach (var key in dict.Keys)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="@key" @bind="checkboxStates[key]" />
+                            <label class="form-check-label" for="@key">@key</label>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Carregando configurações...</p>
+            }
+        </div>
+
+        <button type="button" class="btn btn-primary mt-3" @onclick="SalvarConfiguracoes">Salvar</button>
+    </form>
+</div>
+
+
+@code{
+    
+    private async Task SalvarConfiguracoes()
+    {
+        var camposDto = new CamposUtilizadosDTO();
+
+        foreach (var key in checkboxStates.Keys)
+        {
+            var propertyInfo = typeof(CamposUtilizadosDTO).GetProperty(key);
+            if (propertyInfo != null && propertyInfo.PropertyType == typeof(bool))
+            {
+                propertyInfo.SetValue(camposDto, checkboxStates[key]);
+            }
+        }
+
+        var success  = await ConfiguracaoService.SalvarConfiguracoesAsync(camposDto);
+        if (!success)
+        {
+            App.Current.MainPage.DisplayAlert("Erro", "Falha ao salvar configuracoes", "OK");
+        }
+        else
+        {
+            App.Current.MainPage.DisplayAlert("Processamento finalizado", "As configurações foram salvas", "OK");
+        }
+    }
+
+}
