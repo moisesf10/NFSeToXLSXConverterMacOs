@@ -25,7 +25,7 @@ jobs:
       run: sudo ls -1 /Applications | grep "Xcode"
 
     - name: Update Xcode Versions ${{ matrix.xcode }}
-      run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+      run: sudo xcode-select --switch /Applications/Xcode_16.0.app/Contents/Developer
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -50,7 +50,6 @@ jobs:
           -r maccatalyst-x64 \
           --self-contained true \
           -p:PublishTrimmed=true \
-          -p:MtouchLink=None \
           -o ./publish-macos
 
     - name: Create DMG package
