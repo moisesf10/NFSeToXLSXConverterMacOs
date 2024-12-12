@@ -56,7 +56,9 @@ jobs:
           -f net8.0-maccatalyst \
           -r maccatalyst-x64 \
           --self-contained true \
-          -p:PublishTrimmed=true \
+          -p:PublishTrimmed=false \
+          -p:EnableTrimAnalyzer=false \
+          -p:MtouchLink=SdkOnly \
           -o ./publish-macos
 
     - name: Create DMG package
