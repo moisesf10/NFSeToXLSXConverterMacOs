@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-14
+    runs-on: macos-13
     strategy:
       # fail-fast: false
       matrix:
@@ -41,7 +41,7 @@ jobs:
         dotnet-version: '8.0.402' # Use a versão correta do .NET
 
     - name: Install MAUI workloads
-      run: dotnet workload install maui-maccatalyst
+      run: dotnet workload install maui-maccatalyst --version 8.0.402.0
 
     - name: Restore dependencies and workloads
       run: dotnet workload restore
