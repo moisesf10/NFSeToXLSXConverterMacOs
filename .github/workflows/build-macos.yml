@@ -46,6 +46,7 @@ jobs:
       run: |
         dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
           -c Release \
+          -f net8.0-maccatalyst \
           -r maccatalyst-x64 \
           --self-contained true \
           -p:PublishTrimmed=true \
