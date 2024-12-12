@@ -57,9 +57,9 @@ jobs:
           -f net8.0-maccatalyst \
           -r maccatalyst-x64 \
           --self-contained true \
-          -p:PublishTrimmed=false \
+          -p:PublishTrimmed=true \
           -o ./publish-macos \
-          /p:SdkRoot=/Applications/Xcode_16.1.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+          /p:SdkRoot=/Applications/Xcode_15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
     - name: Create DMG package
       run: |
