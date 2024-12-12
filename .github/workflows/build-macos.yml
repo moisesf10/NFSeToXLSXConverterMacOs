@@ -25,7 +25,15 @@ jobs:
       run: sudo ls -1 /Applications | grep "Xcode"
 
     - name: Update Xcode Versions ${{ matrix.xcode }}
-      run: sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+      run: |
+        sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+        sudo xcodebuild -runFirstLaunch
+
+    - name: Verify Xcode version
+      run: xcodebuild -version
+
+    - name: List SDKs xcode
+      run: xcodebuild -showsdks
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
