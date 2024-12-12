@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-14
+    runs-on: macos-13
     strategy:
       # fail-fast: false
       matrix:
@@ -27,9 +27,6 @@ jobs:
     - name: Update Xcode Versions ${{ matrix.xcode }}
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
-        sudo xcodebuild -runFirstLaunch
-        sudo xcodebuild -license accept
-        sudo xcodebuild -downloadPlatform MacCatalyst
 
     - name: Verify Xcode version
       run: xcodebuild -version
