@@ -58,8 +58,7 @@ jobs:
           -r maccatalyst-x64 \
           --self-contained true \
           -p:PublishTrimmed=true \
-          -o ./publish-macos \
-          /p:SdkRoot=/Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+          -o ./publish-macos
 
     - name: Create DMG package
       run: |
