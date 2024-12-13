@@ -136,17 +136,7 @@ jobs:
     - name: Restore NuGet packages
       run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
-    - name: Build Project
-      run: |
-        dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
-        --configuration Release `
-        -p:Platform="x64" `
-        -p:RuntimeIdentifier=win10-x64 `
-        -p:SelfContained=true `
-        -p:PublishTrimmed=false `
-        -p:UseAppHost=true
-
-    - name: Pack MSIX
+    - name: Publish Pack MSIX
       run: |
         dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
         --configuration Release `
@@ -159,8 +149,15 @@ jobs:
         -p:PublishProfile="Properties\\PublishProfiles\\Win10-MSIXToolkit.pubxml" `
         -o ./output
 
+    - name: List Output Files Published
+      run: dir ./output
+
     - name: Decode PFX Certificate
-      run: echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
+      run: |
+        echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
+
+    - name: List to Find MoisesFerreiraApp.pfx
+      run: dir ./
 
     - name: Sign MSIX Package
       run: |
