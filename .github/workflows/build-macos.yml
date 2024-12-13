@@ -18,6 +18,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: XCode Print Path
+      run: xcode-select --print-path
+
     - name: List Xcode installations
       run: sudo ls -1 /Applications | grep "Xcode"
     
