@@ -137,10 +137,27 @@ jobs:
       run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
     - name: Build Project
-      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
+      run: |
+        dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
+        --configuration Release `
+        -p:Platform="x64" `
+        -p:RuntimeIdentifier=win10-x64 `
+        -p:SelfContained=true `
+        -p:PublishTrimmed=false `
+        -p:UseAppHost=true
 
     - name: Pack MSIX
-      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release -p:Platform="x64" -f net8.0-windows10.0.19041.0 -p:RuntimeIdentifier=win10-x64 --self-contained true -p:PublishTrimmed=false -p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
+      run: |
+        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
+        --configuration Release `
+        -p:Platform="x64" `
+        -p:RuntimeIdentifier=win10-x64 `
+        -p:SelfContained=true `
+        -p:PublishTrimmed=false `
+        -p:UseAppHost=true `
+        -f net8.0-windows10.0.19041.0 `
+        -p:PublishProfile="Properties\\PublishProfiles\\Win10-MSIXToolkit.pubxml" `
+        -o ./output
 
     - name: Decode PFX Certificate
       run: echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
