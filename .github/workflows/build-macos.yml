@@ -64,6 +64,8 @@ jobs:
     - name: Update Xcode Versions ${{ matrix.xcode }}
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+        export DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+        export SDKROOT=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
 
     - name: Install aditional components
       run: sudo xcodebuild -runFirstLaunch
@@ -92,6 +94,8 @@ jobs:
     #  run: ls -R
 
     - name: Publish project
+      env:
+        SDKROOT: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
       # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
       run: |
         dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
@@ -102,7 +106,7 @@ jobs:
           -p:PublishTrimmed=true \
           -p:MtouchLink=None \
           -o ./publish-macos \
-          -p:MacOSXSDKRoot=/Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
+          -p:MacOSXSDKRoot=$SDKROOT
 
     - name: Create DMG package
       run: |
