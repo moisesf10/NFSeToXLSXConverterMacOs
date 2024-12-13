@@ -101,7 +101,8 @@ jobs:
           --self-contained true \
           -p:PublishTrimmed=true \
           -p:MtouchLink=None \
-          -o ./publish-macos
+          -o ./publish-macos \
+          -p:MacOSXSDKRoot=/Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
 
     - name: Create DMG package
       run: |
