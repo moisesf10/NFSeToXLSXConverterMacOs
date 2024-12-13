@@ -34,6 +34,9 @@ jobs:
     - name: List SDKs xcode
       run: xcodebuild -showsdks
 
+    - name: list directories
+      run: ls -al /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+
     - name: Test Xcode build
       run: xcodebuild -scheme TestScheme -sdk maccatalyst -version
     
