@@ -9,27 +9,61 @@ on:
       - main
 
 jobs:
-  test-xcode:
+  # test-xcode:
+  #   runs-on: macos-14
+  #   strategy:
+  #     matrix:
+  #       xcode: ["16.0"]
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+
+  #   - name: XCode Print Path
+  #     run: xcode-select --print-path
+
+  #   - name: List Xcode installations
+  #     run: sudo ls -1 /Applications | grep "Xcode"
+    
+  #   - name: Update Xcode Versions ${{ matrix.xcode }}
+  #     run: |
+  #       sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+
+  #   - name: Software Update XCode
+  #     run: sudo softwareupdate --install -a
+
+  #   - name: Install aditional components
+  #     run: sudo xcodebuild -runFirstLaunch
+
+  #   - name: Verify Xcode version
+  #     run: xcodebuild -version
+
+    #- name: download all plataform
+    #  run: sudo xcodebuild -downloadAllPlatforms
+
+    # - name: List SDKs xcode
+    #   run: xcodebuild -showsdks
+
+    #- name: Test Xcode build
+    #  run: xcodebuild -scheme TestScheme -sdk macos -version
+    
+  build-macos:
     runs-on: macos-14
     strategy:
+      # fail-fast: false
       matrix:
         xcode: ["16.0"]
+
     steps:
+    
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: XCode Print Path
-      run: xcode-select --print-path
-
     - name: List Xcode installations
       run: sudo ls -1 /Applications | grep "Xcode"
-    
+
     - name: Update Xcode Versions ${{ matrix.xcode }}
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
-
-    - name: Software Update XCode
-      run: sudo softwareupdate --install -a
 
     - name: Install aditional components
       run: sudo xcodebuild -runFirstLaunch
@@ -37,78 +71,45 @@ jobs:
     - name: Verify Xcode version
       run: xcodebuild -version
 
-    #- name: download all plataform
-    #  run: sudo xcodebuild -downloadAllPlatforms
-
     - name: List SDKs xcode
       run: xcodebuild -showsdks
 
-    #- name: Test Xcode build
-    #  run: xcodebuild -scheme TestScheme -sdk macos -version
-    
-  # build-macos:
-  #   runs-on: macos-14
-  #   strategy:
-  #     # fail-fast: false
-  #     matrix:
-  #       xcode: ["16.0"]
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Use a versão correta do .NET
 
-  #   steps:
-    
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
+    - name: Install MAUI workloads
+      run: dotnet workload install maui-maccatalyst
 
-  #   - name: List Xcode installations
-  #     run: sudo ls -1 /Applications | grep "Xcode"
+    - name: Restore dependencies and workloads
+      run: dotnet workload restore
 
-  #   - name: Update Xcode Versions ${{ matrix.xcode }}
-  #     run: |
-  #       sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
-  #       sudo xcodebuild -downloadAllPlatforms
-  #       sudo xcodebuild -license accept
+    #- name: List directory contents
+    #  run: ls -R
 
-  #   - name: Verify Xcode version
-  #     run: xcodebuild -version
+    - name: Publish project
+      # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
+      run: |
+        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
+          -c Release \
+          -f net8.0-maccatalyst \
+          -r maccatalyst-x64 \
+          --self-contained true \
+          -p:PublishTrimmed=true \
+          -p:MtouchLink=None \
+          -o ./publish-macos
 
-  #   - name: List SDKs xcode
-  #     run: xcodebuild -showsdks
+    - name: Create DMG package
+      run: |
+        mkdir -p output
+        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
 
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: '8.0.x' # Use a versão correta do .NET
-
-  #   - name: Install MAUI workloads
-  #     run: dotnet workload install maui-maccatalyst
-
-  #   - name: Restore dependencies and workloads
-  #     run: dotnet workload restore
-
-  #   #- name: List directory contents
-  #   #  run: ls -R
-
-  #   - name: Publish project
-  #     # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-  #     run: |
-  #       dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-  #         -c Release \
-  #         -f net8.0-maccatalyst \
-  #         -r maccatalyst-x64 \
-  #         --self-contained true \
-  #         -p:PublishTrimmed=true \
-  #         -p:MtouchLink=None \
-  #         -o ./publish-macos
-
-  #   - name: Create DMG package
-  #     run: |
-  #       mkdir -p output
-  #       hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
-
-  #   - name: Upload artifact
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: macos-installer
-  #       path: ./output/NFSe_To_XLSX_Converter.dmg
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-installer
+        path: ./output/NFSe_To_XLSX_Converter.dmg
   
 
   # build-and-package:
