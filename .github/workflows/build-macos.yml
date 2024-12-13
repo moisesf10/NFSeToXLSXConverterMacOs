@@ -104,14 +104,13 @@ jobs:
           -r maccatalyst-x64 \
           --self-contained true \
           -p:PublishTrimmed=true \
-          -p:MtouchLink=None \
           -o ./publish-macos \
           -p:MacOSXSDKRoot=$SDKROOT
 
     - name: Create DMG package
       run: |
         mkdir -p output
-        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish-macos
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
