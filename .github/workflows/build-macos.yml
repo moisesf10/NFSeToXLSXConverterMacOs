@@ -46,113 +46,119 @@ jobs:
     #- name: Test Xcode build
     #  run: xcodebuild -scheme TestScheme -sdk macos -version
     
-  build-macos:
-    runs-on: macos-14
-    strategy:
-      # fail-fast: false
-      matrix:
-        xcode: ["16.0"]
+  # build-macos:
+  #   runs-on: macos-14
+  #   strategy:
+  #     # fail-fast: false
+  #     matrix:
+  #       xcode: ["16.0"]
 
-    steps:
-    
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: List Xcode installations
-      run: sudo ls -1 /Applications | grep "Xcode"
-
-    - name: Update Xcode Versions ${{ matrix.xcode }}
-      run: |
-        sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
-        export DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
-        export SDKROOT=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
-
-    - name: Install aditional components
-      run: sudo xcodebuild -runFirstLaunch
-
-    - name: Verify Xcode version
-      run: xcodebuild -version
-
-    - name: List SDKs xcode
-      run: xcodebuild -showsdks
-
-    - name: Verify macOs sdk exists
-      run: sudo ls /Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x' # Use a versão correta do .NET
-
-    - name: Install MAUI workloads
-      run: dotnet workload install maui-maccatalyst
-
-    - name: Restore dependencies and workloads
-      run: dotnet workload restore
-
-    #- name: List directory contents
-    #  run: ls -R
-
-    - name: Publish project
-      env:
-        SDKROOT: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
-      # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-      run: |
-        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-          -c Release \
-          -f net8.0-maccatalyst \
-          -r maccatalyst-x64 \
-          --self-contained true \
-          -p:PublishTrimmed=true \
-          -o ./publish-macos \
-          -p:MacOSXSDKRoot=$SDKROOT
-
-    - name: Create DMG package
-      run: |
-        mkdir -p output
-        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish-macos
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-installer
-        path: ./output/NFSe_To_XLSX_Converter.dmg
-  
-
-  # build-and-package:
-  #   runs-on: windows-latest
   #   steps:
+    
   #   - name: Checkout code
   #     uses: actions/checkout@v2
 
+  #   - name: List Xcode installations
+  #     run: sudo ls -1 /Applications | grep "Xcode"
+
+  #   - name: Update Xcode Versions ${{ matrix.xcode }}
+  #     run: |
+  #       sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+  #       export DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+  #       export SDKROOT=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
+
+  #   - name: Install aditional components
+  #     run: sudo xcodebuild -runFirstLaunch
+
+  #   - name: Verify Xcode version
+  #     run: xcodebuild -version
+
+  #   - name: List SDKs xcode
+  #     run: xcodebuild -showsdks
+
+  #   - name: Verify macOs sdk exists
+  #     run: sudo ls /Applications/Xcode_16.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+
   #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v1
+  #     uses: actions/setup-dotnet@v4
   #     with:
-  #       dotnet-version: 8.0.x
+  #       dotnet-version: '8.0.x' # Use a versão correta do .NET
 
-  #   - name: Install MAUI Workloads
-  #     run: dotnet workload install maui
+  #   - name: Install MAUI workloads
+  #     run: dotnet workload install maui-maccatalyst
 
-  #   - name: Restore NuGet packages
-  #     run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
+  #   - name: Restore dependencies and workloads
+  #     run: dotnet workload restore
 
-  #   - name: Build Project
-  #     run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
+  #   #- name: List directory contents
+  #   #  run: ls -R
 
-  #   - name: Pack MSIX
-  #     run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" -f net8.0-windows10.0.19041.0 /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml
+  #   - name: Publish project
+  #     env:
+  #       SDKROOT: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
+  #     # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
+  #     run: |
+  #       dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
+  #         -c Release \
+  #         -f net8.0-maccatalyst \
+  #         -r maccatalyst-x64 \
+  #         --self-contained true \
+  #         -p:PublishTrimmed=true \
+  #         -o ./publish-macos \
+  #         -p:MacOSXSDKRoot=$SDKROOT
 
-  #   - name: Upload MSIX to Artifacts
+  #   - name: Create DMG package
+  #     run: |
+  #       mkdir -p output
+  #       hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish-macos
+
+  #   - name: Upload artifact
   #     uses: actions/upload-artifact@v4
   #     with:
-  #       name: msix-package
-  #       path: ./output/*.msix
+  #       name: macos-installer
+  #       path: ./output/NFSe_To_XLSX_Converter.dmg
+  
 
-  #   - name: Sign MSIX Package
-  #     run: SignTool sign /a /fd SHA256 /f NFSeToXLSXConverterMacOs/MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
+  build-and-package:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-  #   - name: Upload Signed MSIX
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: signed-msix-package
-  #       path: ./output/*.msix
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Install MAUI Workloads
+      run: dotnet workload install maui
+
+    - name: Restore NuGet packages
+      run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
+
+    - name: Build Project
+      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
+           --configuration Release \
+           /p:Platform="x64"
+
+    - name: Pack MSIX
+      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
+           --configuration Release \
+           /p:Platform="x64" \
+           -f net8.0-windows10.0.19041.0 \
+           /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml \
+           -o ./output
+
+    - name: Decode PFX Certificate
+      run: echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
+
+    - name: Sign MSIX Package
+      run: |
+        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign \
+        /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
+
+    - name: Upload Signed MSIX
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-msix-package
+        path: ./output/*.msix
