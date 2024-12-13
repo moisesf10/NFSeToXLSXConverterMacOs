@@ -137,25 +137,17 @@ jobs:
       run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
     - name: Build Project
-      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj ^
-           --configuration Release ^
-           /p:Platform="x64"
+      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64"
 
     - name: Pack MSIX
-      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj ^
-           --configuration Release ^
-           /p:Platform="x64" ^
-           -f net8.0-windows10.0.19041.0 ^
-           /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml ^
-           -o ./output
+      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj --configuration Release /p:Platform="x64" -f net8.0-windows10.0.19041.0 /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml -o ./output
 
     - name: Decode PFX Certificate
       run: echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
 
     - name: Sign MSIX Package
       run: |
-        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign ^
-        /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
+        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
 
     - name: Upload Signed MSIX
       uses: actions/upload-artifact@v4
