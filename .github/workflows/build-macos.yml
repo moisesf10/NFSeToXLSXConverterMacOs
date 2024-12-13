@@ -28,8 +28,8 @@ jobs:
     - name: Verify Xcode version
       run: xcodebuild -version
 
-    - name: download all plataform
-      run: sudo xcodebuild -downloadAllPlatforms
+    #- name: download all plataform
+    #  run: sudo xcodebuild -downloadAllPlatforms
 
     - name: List SDKs xcode
       run: xcodebuild -showsdks
