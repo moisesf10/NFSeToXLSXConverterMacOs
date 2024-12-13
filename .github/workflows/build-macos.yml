@@ -28,6 +28,12 @@ jobs:
       run: |
         sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
 
+    - name: Accept License
+      run: sudo xcodebuild -license
+
+    - name: Install aditional components
+      run: sudo xcodebuild -runFirstLaunch
+
     - name: Verify Xcode version
       run: xcodebuild -version
 
@@ -36,9 +42,6 @@ jobs:
 
     - name: List SDKs xcode
       run: xcodebuild -showsdks
-
-    - name: list directories
-      run: ls -R /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
 
     #- name: Test Xcode build
     #  run: xcodebuild -scheme TestScheme -sdk macos -version
