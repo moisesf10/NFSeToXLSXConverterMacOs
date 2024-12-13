@@ -35,10 +35,10 @@ jobs:
       run: xcodebuild -showsdks
 
     - name: list directories
-      run: ls -al /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      run: ls -R /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
 
-    - name: Test Xcode build
-      run: xcodebuild -scheme TestScheme -sdk maccatalyst -version
+    #- name: Test Xcode build
+    #  run: xcodebuild -scheme TestScheme -sdk macos -version
     
   # build-macos:
   #   runs-on: macos-14
