@@ -137,16 +137,16 @@ jobs:
       run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
     - name: Build Project
-      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-           --configuration Release \
+      run: dotnet build NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj ^
+           --configuration Release ^
            /p:Platform="x64"
 
     - name: Pack MSIX
-      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-           --configuration Release \
-           /p:Platform="x64" \
-           -f net8.0-windows10.0.19041.0 \
-           /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml \
+      run: dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj ^
+           --configuration Release ^
+           /p:Platform="x64" ^
+           -f net8.0-windows10.0.19041.0 ^
+           /p:PublishProfile=Properties\PublishProfiles\Win10-MSIXToolkit.pubxml ^
            -o ./output
 
     - name: Decode PFX Certificate
@@ -154,7 +154,7 @@ jobs:
 
     - name: Sign MSIX Package
       run: |
-        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign \
+        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign ^
         /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
 
     - name: Upload Signed MSIX
