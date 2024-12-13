@@ -29,15 +29,13 @@ jobs:
       run: xcodebuild -version
 
     - name: download all plataform
-      run: |
-        sudo xcodebuild -downloadAllPlatforms
-        sudo xcodebuild -license accept
+      run: sudo xcodebuild -downloadAllPlatforms
 
     - name: List SDKs xcode
       run: xcodebuild -showsdks
 
     - name: Test Xcode build
-      run: xcodebuild -scheme TestScheme -sdk macosx -version
+      run: xcodebuild -scheme TestScheme -sdk maccatalyst -version
     
   # build-macos:
   #   runs-on: macos-14
