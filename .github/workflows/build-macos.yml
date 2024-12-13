@@ -9,68 +9,94 @@ on:
       - main
 
 jobs:
-  build-macos:
+  test-xcode:
     runs-on: macos-14
     strategy:
-      # fail-fast: false
       matrix:
-        xcode: ["15.4"]
-
+        xcode: ["16.0"]
     steps:
-    
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: List Xcode installations
       run: sudo ls -1 /Applications | grep "Xcode"
-
+    
     - name: Update Xcode Versions ${{ matrix.xcode }}
       run: |
-        sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
-        sudo xcodebuild -runFirstLaunch
+        sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
 
     - name: Verify Xcode version
       run: xcodebuild -version
-
+  
     - name: List SDKs xcode
       run: xcodebuild -showsdks
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.402' # Use a versão correta do .NET
+    - name: Test Xcode build
+      run: xcodebuild -scheme TestScheme -sdk macosx -version
+    
+  # build-macos:
+  #   runs-on: macos-14
+  #   strategy:
+  #     # fail-fast: false
+  #     matrix:
+  #       xcode: ["16.0"]
 
-    - name: Install MAUI workloads
-      run: dotnet workload install maui-maccatalyst --version 8.0.402.0
+  #   steps:
+    
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
 
-    - name: Restore dependencies and workloads
-      run: dotnet workload restore
+  #   - name: List Xcode installations
+  #     run: sudo ls -1 /Applications | grep "Xcode"
 
-    #- name: List directory contents
-    #  run: ls -R
+  #   - name: Update Xcode Versions ${{ matrix.xcode }}
+  #     run: |
+  #       sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app
+  #       sudo xcodebuild -downloadAllPlatforms
+  #       sudo xcodebuild -license accept
 
-    - name: Publish project
-      # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
-      run: |
-        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
-          -c Release \
-          -f net8.0-maccatalyst \
-          -r maccatalyst-x64 \
-          --self-contained true \
-          -p:PublishTrimmed=true \
-          -p:MtouchLink=None \
-          -o ./publish-macos
+  #   - name: Verify Xcode version
+  #     run: xcodebuild -version
 
-    - name: Create DMG package
-      run: |
-        mkdir -p output
-        hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+  #   - name: List SDKs xcode
+  #     run: xcodebuild -showsdks
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-installer
-        path: ./output/NFSe_To_XLSX_Converter.dmg
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v4
+  #     with:
+  #       dotnet-version: '8.0.x' # Use a versão correta do .NET
+
+  #   - name: Install MAUI workloads
+  #     run: dotnet workload install maui-maccatalyst
+
+  #   - name: Restore dependencies and workloads
+  #     run: dotnet workload restore
+
+  #   #- name: List directory contents
+  #   #  run: ls -R
+
+  #   - name: Publish project
+  #     # run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o  NFSeToXLSX.Core/NFSeToXLSX.Core.csproj
+  #     run: |
+  #       dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj \
+  #         -c Release \
+  #         -f net8.0-maccatalyst \
+  #         -r maccatalyst-x64 \
+  #         --self-contained true \
+  #         -p:PublishTrimmed=true \
+  #         -p:MtouchLink=None \
+  #         -o ./publish-macos
+
+  #   - name: Create DMG package
+  #     run: |
+  #       mkdir -p output
+  #       hdiutil create ./output/NFSe_To_XLSX_Converter.dmg -volname "NFSe To XLSX Converter" -srcfolder ./publish
+
+  #   - name: Upload artifact
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: macos-installer
+  #       path: ./output/NFSe_To_XLSX_Converter.dmg
   
 
   # build-and-package:
