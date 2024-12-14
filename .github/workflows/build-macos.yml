@@ -126,7 +126,7 @@ jobs:
 
     - name: Sign MSIX Package
       run: |
-        powershell.exe -Command "& 'C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe' sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix"    
+        cmd.exe /C ""C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix"    
 
     - name: Upload Signed MSIX
       uses: actions/upload-artifact@v4
