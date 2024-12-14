@@ -8,67 +8,7 @@ on:
     branches:
       - main
 
-jobs:
-  test-convert-cert:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Decode PFX Certificate
-        run: |
-          # Acessa a string base64 do segredo
-          $base64string = "${{ secrets.PFX_BASE64 }}"
-          # Remove qualquer espaço ou nova linha (para garantir que o formato base64 seja válido)
-          $base64string = $base64string -replace '\r|\n', ''
-          # Converte de base64 para bytes
-          $bytes = [System.Convert]::FromBase64String($base64string)
-          # Salva os bytes em um arquivo .pfx
-          [System.IO.File]::WriteAllBytes("./MoisesFerreiraApp.pfx", $bytes)
-
-      - name: Descompressao Comum
-        run: |
-          echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp3.pfx
-          
-      - name: List files
-        run: dir ./
-  # test-xcode:
-  #   runs-on: macos-14
-  #   strategy:
-  #     matrix:
-  #       xcode: ["16.0"]
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
-
-  #   - name: XCode Print Path
-  #     run: xcode-select --print-path
-
-  #   - name: List Xcode installations
-  #     run: sudo ls -1 /Applications | grep "Xcode"
-    
-  #   - name: Update Xcode Versions ${{ matrix.xcode }}
-  #     run: |
-  #       sudo xcode-select --switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
-
-  #   - name: Software Update XCode
-  #     run: sudo softwareupdate --install -a
-
-  #   - name: Install aditional components
-  #     run: sudo xcodebuild -runFirstLaunch
-
-  #   - name: Verify Xcode version
-  #     run: xcodebuild -version
-
-    #- name: download all plataform
-    #  run: sudo xcodebuild -downloadAllPlatforms
-
-    # - name: List SDKs xcode
-    #   run: xcodebuild -showsdks
-
-    #- name: Test Xcode build
-    #  run: xcodebuild -scheme TestScheme -sdk macos -version
-    
+jobs: 
   # build-macos:
   #   runs-on: macos-14
   #   strategy:
@@ -186,7 +126,7 @@ jobs:
 
     - name: Sign MSIX Package
       run: |
-        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
+        & "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix      
 
     - name: Upload Signed MSIX
       uses: actions/upload-artifact@v4
