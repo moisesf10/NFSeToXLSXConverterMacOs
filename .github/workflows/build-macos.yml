@@ -28,7 +28,7 @@ jobs:
 
       - name: Descompressao Comum
         run: |
-          echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp2.pfx
+          echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp3.pfx
           
       - name: List files
         run: dir ./
