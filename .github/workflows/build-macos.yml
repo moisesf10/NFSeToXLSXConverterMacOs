@@ -9,6 +9,25 @@ on:
       - main
 
 jobs:
+  test-convert-cert:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Decode PFX Certificate
+        run: |
+          # Acessa a string base64 do segredo
+          $base64string = "${{ secrets.PFX_BASE64 }}"
+          # Remove qualquer espaço ou nova linha (para garantir que o formato base64 seja válido)
+          $base64string = $base64string -replace '\r|\n', ''
+          # Converte de base64 para bytes
+          $bytes = [System.Convert]::FromBase64String($base64string)
+          # Salva os bytes em um arquivo .pfx
+          [System.IO.File]::WriteAllBytes("./MoisesFerreiraApp.pfx", $bytes)
+          
+      - name: List files
+        run: dir ./
   # test-xcode:
   #   runs-on: macos-14
   #   strategy:
@@ -119,52 +138,52 @@ jobs:
   #       path: ./output/NFSe_To_XLSX_Converter.dmg
   
 
-  build-and-package:
-    runs-on: windows-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  # build-and-package:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 8.0.x
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 8.0.x
 
-    - name: Install MAUI Workloads
-      run: dotnet workload install maui
+  #   - name: Install MAUI Workloads
+  #     run: dotnet workload install maui
 
-    - name: Restore NuGet packages
-      run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
+  #   - name: Restore NuGet packages
+  #     run: dotnet restore NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj
 
-    - name: Publish Pack MSIX
-      run: |
-        dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
-        --configuration Release `
-        -p:Platform="x64" `
-        -p:RuntimeIdentifier=win10-x64 `
-        -p:SelfContained=true `
-        -p:PublishTrimmed=false `
-        -p:UseAppHost=true `
-        -f net8.0-windows10.0.19041.0 `
-        -p:PublishProfile="Properties\\PublishProfiles\\Win10-MSIXToolkit.pubxml" `
-        -o ./output
+  #   - name: Publish Pack MSIX
+  #     run: |
+  #       dotnet publish NFSeToXLSXConverterMacOs/NFSeToXLSXConverterMacOs.csproj `
+  #       --configuration Release `
+  #       -p:Platform="x64" `
+  #       -p:RuntimeIdentifier=win10-x64 `
+  #       -p:SelfContained=true `
+  #       -p:PublishTrimmed=false `
+  #       -p:UseAppHost=true `
+  #       -f net8.0-windows10.0.19041.0 `
+  #       -p:PublishProfile="Properties\\PublishProfiles\\Win10-MSIXToolkit.pubxml" `
+  #       -o ./output
 
-    - name: Debug PFX_BASE64
-      run: echo "${{ secrets.PFX_BASE64 }}"
+  #   - name: Debug PFX_BASE64
+  #     run: echo "${{ secrets.PFX_BASE64 }}"
 
-    - name: Decode PFX Certificate
-      run: |
-        echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
+  #   - name: Decode PFX Certificate
+  #     run: |
+  #       echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp.pfx
 
-    - name: List to Find MoisesFerreiraApp.pfx
-      run: dir ./
+  #   - name: List to Find MoisesFerreiraApp.pfx
+  #     run: dir ./
 
-    - name: Sign MSIX Package
-      run: |
-        "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
+  #   - name: Sign MSIX Package
+  #     run: |
+  #       "C:\Program Files (x86)\Windows Kits\10\bin\x64\SignTool.exe" sign /a /fd SHA256 /f ./MoisesFerreiraApp.pfx /p 123456 ./output/*.msix
 
-    - name: Upload Signed MSIX
-      uses: actions/upload-artifact@v4
-      with:
-        name: signed-msix-package
-        path: ./output/*.msix
+  #   - name: Upload Signed MSIX
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: signed-msix-package
+  #       path: ./output/*.msix
