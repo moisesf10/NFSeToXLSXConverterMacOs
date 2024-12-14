@@ -25,6 +25,10 @@ jobs:
           $bytes = [System.Convert]::FromBase64String($base64string)
           # Salva os bytes em um arquivo .pfx
           [System.IO.File]::WriteAllBytes("./MoisesFerreiraApp.pfx", $bytes)
+
+      - name: Descompressao Comum
+        run: |
+          echo "${{ secrets.PFX_BASE64 }}" | base64 -d > ./MoisesFerreiraApp2.pfx
           
       - name: List files
         run: dir ./
